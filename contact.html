@@ -2,38 +2,125 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Muhammad Fadillah Ikram Naveki Personal Website</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Muhammad Fadillah Ikram Naveki Personal Website</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background-color: #f4f6f8;
+      color: #333;
+    }
+
+    nav {
+      background-color: #2d3e50;
+      padding: 1em;
+      text-align: center;
+    }
+
+    nav a {
+      color: white;
+      margin: 0 15px;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    nav a:hover {
+      text-decoration: underline;
+    }
+
+    .contact-container {
+      background-color: white;
+      max-width: 600px;
+      margin: 2em auto;
+      padding: 2em;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .contact-container h1 {
+      text-align: center;
+      color: #2d3e50;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1em;
+    }
+
+    label {
+      font-weight: 600;
+      margin-bottom: 0.5em;
+    }
+
+    input[type="email"],
+    textarea {
+      padding: 0.8em;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1em;
+      resize: vertical;
+    }
+
+    input[type="submit"] {
+      background-color: #2d3e50;
+      color: white;
+      border: none;
+      padding: 0.8em;
+      border-radius: 8px;
+      font-size: 1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    input[type="submit"]:hover {
+      background-color: #1c2a38;
+    }
+
+    footer {
+      background-color: #2d3e50;
+      color: white;
+      text-align: center;
+      padding: 1em;
+      margin-top: 2em;
+    }
+  </style>
 </head>
 
 <body>
-    <nav>
-        <a href="index.html">Home</a> |
-        <a href="cv-dian.pdf">Download CV</a> |
-        <a href="contact.html">Contact</a> |
-        <a href="about.html">About me</a>
-    </nav>
+  <nav>
+    <a href="index.html">Home</a> |
+    <a href="cv-dian.pdf">Download CV</a> |
+    <a href="contact.html">Contact</a> |
+    <a href="about.html">About me</a>
+  </nav>
 
-    <hr />
+  <div class="contact-container">
+    <h1>Contact Me</h1>
+    <form>
+      <div>
+        <label for="email">Email</label>
+        <input type="email" name="email" placeholder="Alamat email" required />
+      </div>
 
-    <div>
-        <h1>Contact Me</h1>
-        <form>
-            <label for="email">Email</label><br />
-            <input type="email" name="email" placeholder="alamat email"/>
-            <br />
-            <label for="message">Pesan</label><br />
-            <textarea name="message" placeholder="Tulis pesan anda..." rows="4" cols="80"></textarea>
-            <br />
-            <br />
-            <input type="submit" value="Kirim" />
-        </form>
-    </div>
+      <div>
+        <label for="message">Pesan</label>
+        <textarea name="message" placeholder="Tulis pesan anda..." rows="5" required></textarea>
+      </div>
 
-    <hr>
-    <footer style="text-align: center;">
-        <p>Copyright &copy; 2020 Ahmad Muhardian.</p>
-    </footer>
+      <input type="submit" value="Kirim" />
+    </form>
+  </div>
+
+  <footer>
+    <p>&copy; 2020 Ahmad Muhardian. All rights reserved.</p>
+  </footer>
 </body>
+
 </html>
