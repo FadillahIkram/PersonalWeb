@@ -17,9 +17,8 @@ body {
   overflow: hidden;
   position: relative;
   padding: 2em 0;
-  perspective: 1000px;
+  perspective: 1200px; /* Tingkatkan perspective */
 }
-
 
 .carousel-track {
   display: flex;
@@ -27,6 +26,7 @@ body {
   will-change: transform;
   cursor: grab;
   position: relative;
+  transform-style: preserve-3d; /* Penting untuk 3D */
 }
 
 .carousel-item {
@@ -36,28 +36,52 @@ body {
   border-radius: 20px;
   overflow: hidden;
   box-shadow: 0 10px 20px rgba(0,0,0,0.15);
-  transform: scale(0.9);
-  transition: transform 0.3s ease;
+  position: relative;
+  transform-style: preserve-3d; /* Penting untuk 3D */
+  transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 .carousel-item img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: block;
+  transform-origin: center;
+  transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+  border-radius: 20px;
 }
 
+/* Efek 3D yang diperkuat */
 .carousel-item.active {
-  transform: scale(1.1);
-  transition: transform 0.3s ease;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-  z-index: 2;
+  transform: scale(1.1) translateZ(50px); /* Tambahkan translateZ untuk efek 3D */
+  z-index: 10;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.3);
 }
-
 
 .carousel-item:not(.active) {
-  cursor: grab;
-  opacity: 0.6;
-  transform: scale(0.9);
-  transition: transform 0.3s ease, opacity 0.3s ease;
+  opacity: 0.7;
+  transform: scale(0.85) translateZ(-30px) rotateY(20deg); /* Efek 3D utama */
+  filter: brightness(0.8) blur(1px);
 }
+
+/* Efek lebih kuat untuk item yang jauh dari tengah */
+.carousel-item:nth-child(2):not(.active) {
+  transform: scale(0.8) translateZ(-60px) rotateY(30deg);
+  opacity: 0.5;
+}
+
+.carousel-item:nth-child(3):not(.active) {
+  transform: scale(0.75) translateZ(-90px) rotateY(40deg);
+  opacity: 0.3;
+}
+
+/* Efek untuk arah sebaliknya */
+.carousel-item:nth-last-child(2):not(.active) {
+  transform: scale(0.8) translateZ(-60px) rotateY(-30deg);
+  opacity: 0.5;
+}
+
+.carousel-item:nth-last-child(3):not(.active) {
+  transform: scale(0.75) translateZ(-90px) rotateY(-40deg);
+  opacity: 0.3;
+}
+
