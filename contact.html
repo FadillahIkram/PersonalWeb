@@ -17,21 +17,39 @@
     }
 
     nav {
-      background-color: #2d3e50;
-      padding: 1em;
-      text-align: center;
-    }
+        background-color: #2d3e50;
+        padding: 1em;
+        text-align: center;
+        }
 
-    nav a {
-      color: white;
-      margin: 0 15px;
-      text-decoration: none;
-      font-weight: 600;
-    }
+        nav a {
+        color: white;
+        margin: 0 15px;
+        text-decoration: none;
+        font-weight: 600;
+        position: relative;
+        transition: all 0.3s ease;
+        }
 
-    nav a:hover {
-      text-decoration: underline;
-    }
+        nav a::after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 3px;
+        bottom: -5px;
+        left: 50%;
+        background-color: #00e0ff;
+        transition: all 0.3s ease;
+        transform: translateX(-50%);
+        }
+
+        nav a:hover {
+        color: #00e0ff;
+        }
+
+        nav a:hover::after {
+        width: 100%;
+        }
 
     .contact-container {
       background-color: white;
@@ -95,9 +113,9 @@
 
 <body>
   <nav>
-    <a href="index.html">Home</a> |
-    <a href="cv-dian.pdf">Download CV</a> |
-    <a href="contact.html">Contact</a> |
+    <a href="index.html">Home</a> 
+    <a href="cv-dian.pdf">Download CV</a> 
+    <a href="contact.html">Contact</a> 
     <a href="about.html">About me</a>
   </nav>
 

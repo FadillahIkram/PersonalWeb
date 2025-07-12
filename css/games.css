@@ -1,0 +1,63 @@
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background-color: #f4f6f8;
+  color: #333;
+}
+
+.game-section {
+  text-align: center;
+  margin: 4em 1em;
+}
+
+.carousel {
+  width: 100%;
+  max-width: 1000px;
+  margin: auto;
+  overflow: hidden;
+  position: relative;
+  padding: 2em 0;
+  perspective: 1000px;
+}
+
+
+.carousel-track {
+  display: flex;
+  gap: 2em;
+  will-change: transform;
+  cursor: grab;
+  position: relative;
+}
+
+.carousel-item {
+  flex: 0 0 300px;
+  height: 400px;
+  background-color: white;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+  transform: scale(0.9);
+  transition: transform 0.3s ease;
+}
+
+.carousel-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.carousel-item.active {
+  transform: scale(1.1);
+  transition: transform 0.3s ease;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  z-index: 2;
+}
+
+
+.carousel-item:not(.active) {
+  cursor: grab;
+  opacity: 0.6;
+  transform: scale(0.9);
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
