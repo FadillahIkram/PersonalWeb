@@ -17,16 +17,16 @@ body {
   overflow: hidden;
   position: relative;
   padding: 2em 0;
-  perspective: 1200px; /* Tingkatkan perspective */
+  perspective: 1200px; /* Untuk efek 3D */
 }
 
 .carousel-track {
   display: flex;
   gap: 2em;
-  will-change: transform;
-  cursor: grab;
   position: relative;
-  transform-style: preserve-3d; /* Penting untuk 3D */
+  cursor: grab;
+  will-change: transform;
+  transform-style: preserve-3d;
 }
 
 .carousel-item {
@@ -35,35 +35,38 @@ body {
   background-color: white;
   border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.15);
   position: relative;
-  transform-style: preserve-3d; /* Penting untuk 3D */
+  transform-style: preserve-3d;
+  perspective: 1000px;
   transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
 }
 
+/* Gambar dalam item */
 .carousel-item img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   transform-origin: center;
-  transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
   border-radius: 20px;
+  transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-/* Efek 3D yang diperkuat */
+/* Efek item aktif (tengah) */
 .carousel-item.active {
-  transform: scale(1.1) translateZ(50px); /* Tambahkan translateZ untuk efek 3D */
+  transform: scale(1.1) translateZ(50px);
   z-index: 10;
-  box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
 }
 
+/* Efek item non-aktif */
 .carousel-item:not(.active) {
+  transform: scale(0.85) translateZ(-30px) rotateY(20deg);
   opacity: 0.7;
-  transform: scale(0.85) translateZ(-30px) rotateY(20deg); /* Efek 3D utama */
   filter: brightness(0.8) blur(1px);
 }
 
-/* Efek lebih kuat untuk item yang jauh dari tengah */
+/* Efek tambahan untuk item yang lebih jauh dari tengah */
 .carousel-item:nth-child(2):not(.active) {
   transform: scale(0.8) translateZ(-60px) rotateY(30deg);
   opacity: 0.5;
@@ -74,7 +77,6 @@ body {
   opacity: 0.3;
 }
 
-/* Efek untuk arah sebaliknya */
 .carousel-item:nth-last-child(2):not(.active) {
   transform: scale(0.8) translateZ(-60px) rotateY(-30deg);
   opacity: 0.5;
@@ -85,25 +87,21 @@ body {
   opacity: 0.3;
 }
 
-.carousel-item {
-  position: relative;
-  perspective: 1000px;
-  transform-style: preserve-3d;
-  transition: transform 0.3s ease;
-}
-
+/* Efek refleksi di bawah */
 .carousel-item::after {
   content: '';
   position: absolute;
-  bottom: -100%;
+  top: 100%;
   left: 0;
   right: 0;
   height: 100%;
   background: inherit;
   transform: scaleY(-1);
-  opacity: 0.3;
-  filter: blur(5px);
-  z-index: -1;
+  opacity: 0.25;
+  border-radius: inherit;
+  z-index: 0;
+  pointer-events: none;
+  filter: blur(3px);
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), transparent);
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), transparent);
 }
-
-
