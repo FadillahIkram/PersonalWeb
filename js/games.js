@@ -4,7 +4,7 @@ window.addEventListener("DOMContentLoaded", () => {
   const items = Array.from(track.children);
   const itemWidth = items[0].offsetWidth + 32; // padding + margin/gap
   const totalItems = items.length;
-  
+
   // Clone untuk infinite effect
   for (let i = 0; i < totalItems; i++) {
     const cloneBefore = items[i].cloneNode(true);
@@ -15,82 +15,71 @@ window.addEventListener("DOMContentLoaded", () => {
   
   const allItems = Array.from(track.children);
   const fullLength = allItems.length;
-  let startX = -itemWidth * totalItems;
   
-  gsap.set(track, { x: startX });
-  
-  // --- PERBAIKAN UTAMA DI SINI ---
+  // Hitung posisi awal agar item pertama (yang asli) di tengah
+  const initialOffset = -(itemWidth * totalItems);
+  gsap.set(track, { x: initialOffset });
+
   const draggable = Draggable.create(track, {
     type: "x",
-    // 1. Inertia yang lebih tinggi untuk momentum yang lebih kuat
-    inertia: 20, // Meningkatkan nilai dari default
-    
-    // 2. Edge Resistance yang lebih rendah agar lebih mudah digeser dari tepi
-    edgeResistance: 0.25, // Mengurangi dari 0.75
-    
-    // 3. Snap yang lebih halus (opsional, tapi bisa dicoba)
-    snap: {
-      x: function(endValue) {
-        // Snap hanya ketika kecepatan rendah, agar tidak terasa kaku
-        if (Math.abs(this.getVelocity()) < 500) {
-          return Math.round(endValue / itemWidth) * itemWidth;
-        }
-        return endValue; // Jika masih cepat, biarkan bergerak bebas
-      }
+    // Matikan inertia dan edgeResistance agar kita punya kendali penuh
+    inertia: 0, 
+    edgeResistance: 0.2,
+    onDragStart: () => {
+      gsap.killTweensOf(track);
     },
-    
-    // 4. Kontrol momentum saat dilepas dengan lebih baik
-    onDragEnd: function() {
-      // 'this' di sini merujuk ke instance Draggable
-      // Jika kecepatan drag cukup tinggi, biarkan GSAP menangani momentumnya
-      // Jika tidak, langsung panggil highlightCenterItem
-      if (Math.abs(this.getVelocity()) > 100) {
-        // Gunakan throwProps untuk efek melambat yang natural
-        gsap.to(track, {
-          x: this.endX, // Target akhir
-          ease: "power2.out",
-          duration: 1.5, // Durasi animasi melambat
-          overwrite: true,
-          onComplete: highlightCenterItem
-        });
-      } else {
-        highlightCenterItem();
-      }
-    },
-    
-    // Panggil fungsi 3D effect saat bergerak
     onDrag: update3DEffects,
-    onThrowUpdate: update3DEffects
+    onDragEnd: handleDragEnd
   })[0];
-  
-  function wrapIfNeeded() {
-    const x = draggable.x;
-    const minX = -itemWidth * (totalItems * 2);
-    const maxX = 0;
-    
-    // Infinite wrap ke kanan
-    if (x > maxX) {
-      draggable.x = x - itemWidth * totalItems;
+
+  function handleDragEnd() {
+  const centerX = window.innerWidth / 2;
+  let closestItem = null;
+  let closestDistance = Infinity;
+
+  allItems.forEach(item => {
+    const rect = item.getBoundingClientRect();
+    const itemCenter = rect.left + rect.width / 2;
+    const distance = Math.abs(centerX - itemCenter);
+
+    if (distance < closestDistance) {
+      closestDistance = distance;
+      closestItem = item;
     }
-    
-    // Infinite wrap ke kiri
-    if (x < minX) {
-      draggable.x = x + itemWidth * totalItems;
-    }
+  });
+
+  if (closestItem) {
+    const rect = closestItem.getBoundingClientRect();
+    const itemCenter = rect.left + rect.width / 2;
+    const shift = itemCenter - centerX;
+
+    // Hitung posisi sekarang
+    const currentX = gsap.getProperty(track, "x");
+    const targetX = currentX - shift;
+
+    gsap.to(track, {
+      x: targetX,
+      duration: 0.6,
+      ease: "power2.out",
+      onUpdate: update3DEffects,
+      onComplete: () => {
+        allItems.forEach(item => item.classList.remove("active"));
+        closestItem.classList.add("active");
+      }
+    });
   }
-  
+}
+
+
   function update3DEffects() {
     const centerX = window.innerWidth / 2;
-    let closest = null;
-    let closestDistance = Infinity;
-    
-    allItems.forEach((item, index) => {
+    allItems.forEach(item => {
       const rect = item.getBoundingClientRect();
       const itemCenter = rect.left + rect.width / 2;
       const distance = Math.abs(centerX - itemCenter);
       
       // Hitung efek 3D berdasarkan jarak dari tengah
-      const distanceRatio = Math.min(1, distance / (window.innerWidth / 3)); // Batasi efek maksimal
+      const distanceRatio = Math.min(1, distance / (window.innerWidth / 3));
       const rotateY = distanceRatio * 40 * (itemCenter < centerX ? 1 : -1);
       const translateZ = -distanceRatio * 100;
       const scale = 1 - distanceRatio * 0.3;
@@ -100,30 +89,12 @@ window.addEventListener("DOMContentLoaded", () => {
         z: translateZ,
         scale: scale,
         opacity: 1 - distanceRatio * 0.7,
-        duration: 0.3, // Durasi lebih cepat untuk responsivitas
+        duration: 0.2,
         ease: "power2.out"
       });
-      
-      if (distance < closestDistance) {
-        closest = item;
-        closestDistance = distance;
-      }
-    });
-    
-    // Pastikan item active hanya satu
-    allItems.forEach(item => {
-      item.classList.remove("active");
-      if (item === closest) {
-        item.classList.add("active");
-      }
     });
   }
-  
-  function highlightCenterItem() {
-    // Pemanggilan ulang untuk memastikan posisi akhir tepat
-    update3DEffects();
-  }
-  
+
   // Klik untuk membuka game
   track.addEventListener("click", e => {
     const item = e.target.closest(".carousel-item");
@@ -134,13 +105,13 @@ window.addEventListener("DOMContentLoaded", () => {
       }
     }
   });
-  
+
   // Update saat resize
   window.addEventListener("resize", () => {
     draggable.update();
     update3DEffects();
   });
-  
+
   // Inisialisasi
-  highlightCenterItem();
+  update3DEffects();
 });
