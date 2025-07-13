@@ -1,101 +1,135 @@
 window.addEventListener("DOMContentLoaded", () => {
   gsap.registerPlugin(Draggable);
+
   const track = document.querySelector(".carousel-track");
   const items = Array.from(track.children);
-  const itemWidth = items[0].offsetWidth + 32; // padding + margin/gap
+  const itemWidth = items[0].offsetWidth + 32; // width + gap
   const totalItems = items.length;
 
-  // Clone untuk infinite effect
-  for (let i = 0; i < totalItems; i++) {
-    const cloneBefore = items[i].cloneNode(true);
-    const cloneAfter = items[i].cloneNode(true);
-    track.insertBefore(cloneBefore, track.firstChild);
-    track.appendChild(cloneAfter);
+  // Clone item untuk efek loop
+  for (let i = 0; i < totalItems * 2; i++) {
+    const cloneBefore = items[i % totalItems].cloneNode(true);
+    const cloneAfter = items[i % totalItems].cloneNode(true);
+    track.insertBefore(cloneBefore, track.firstChild); // kiri
+    track.appendChild(cloneAfter); // kanan
   }
-  
+
   const allItems = Array.from(track.children);
-  const fullLength = allItems.length;
-  
-  // Hitung posisi awal agar item pertama (yang asli) di tengah
-  const initialOffset = -(itemWidth * totalItems);
+  const totalClones = totalItems * 2;
+  const initialOffset = -itemWidth * totalClones;
   gsap.set(track, { x: initialOffset });
+
+  let dragStartX = 0;
+  let dragStartTime = 0;
 
   const draggable = Draggable.create(track, {
     type: "x",
-    // Matikan inertia dan edgeResistance agar kita punya kendali penuh
-    inertia: 0, 
+    inertia: false,
     edgeResistance: 0.2,
     onDragStart: () => {
       gsap.killTweensOf(track);
+      dragStartX = draggable.x;
+      dragStartTime = Date.now();
     },
-    onDrag: update3DEffects,
+    onDrag: () => {
+      wrapIfNeeded();
+      update3DEffects();
+    },
     onDragEnd: handleDragEnd
   })[0];
 
-  function handleDragEnd() {
-  const centerX = window.innerWidth / 2;
-  let closestItem = null;
-  let closestDistance = Infinity;
+  function wrapIfNeeded() {
+    const totalRange = itemWidth * totalItems;
+    let x = draggable.x;
 
-  allItems.forEach(item => {
-    const rect = item.getBoundingClientRect();
-    const itemCenter = rect.left + rect.width / 2;
-    const distance = Math.abs(centerX - itemCenter);
-
-    if (distance < closestDistance) {
-      closestDistance = distance;
-      closestItem = item;
+    // Jika terlalu kanan (drag ke kiri jauh)
+    if (x > initialOffset + totalRange) {
+      const newX = x - totalRange;
+      gsap.set(track, { x: newX });
+      draggable.update();
     }
-  });
 
-  if (closestItem) {
-    const rect = closestItem.getBoundingClientRect();
-    const itemCenter = rect.left + rect.width / 2;
-    const shift = itemCenter - centerX;
+    // Jika terlalu kiri (drag ke kanan jauh)
+    else if (x < initialOffset - totalRange) {
+      const newX = x + totalRange;
+      gsap.set(track, { x: newX });
+      draggable.update();
+    }
+  }
 
-    // Hitung posisi sekarang
-    const currentX = gsap.getProperty(track, "x");
-    const targetX = currentX - shift;
+  function handleDragEnd() {
+    const dragEndX = draggable.x;
+    const dragEndTime = Date.now();
+
+    const dragDistance = dragEndX - dragStartX;
+    const dragDuration = dragEndTime - dragStartTime;
+    const dragSpeed = dragDistance / dragDuration;
+
+    const relativeX = initialOffset - dragEndX;
+    const currentIndex = Math.round(relativeX / itemWidth);
+
+    let direction = 0;
+    if (Math.abs(dragDistance) > itemWidth / 4 || Math.abs(dragSpeed) > 0.4) {
+      direction = dragDistance < 0 ? 1 : -1;
+    }
+
+    const targetIndex = currentIndex + direction;
+    const targetX = initialOffset - (targetIndex * itemWidth);
 
     gsap.to(track, {
       x: targetX,
-      duration: 0.6,
+      duration: 0.8,
       ease: "power2.out",
-      onUpdate: update3DEffects,
-      onComplete: () => {
-        allItems.forEach(item => item.classList.remove("active"));
-        closestItem.classList.add("active");
-      }
+      onUpdate: () => {
+        wrapIfNeeded();
+        update3DEffects();
+      },
+      onComplete: highlightCenterItem
     });
   }
-}
-
 
   function update3DEffects() {
     const centerX = window.innerWidth / 2;
+
     allItems.forEach(item => {
       const rect = item.getBoundingClientRect();
       const itemCenter = rect.left + rect.width / 2;
       const distance = Math.abs(centerX - itemCenter);
-      
-      // Hitung efek 3D berdasarkan jarak dari tengah
+
       const distanceRatio = Math.min(1, distance / (window.innerWidth / 3));
       const rotateY = distanceRatio * 40 * (itemCenter < centerX ? 1 : -1);
-      const translateZ = -distanceRatio * 100;
       const scale = 1 - distanceRatio * 0.3;
-      
+
       gsap.to(item, {
         rotationY: rotateY,
-        z: translateZ,
         scale: scale,
-        opacity: 1 - distanceRatio * 0.7,
-        duration: 0.2,
+        opacity: 1 - distanceRatio * 0.6,
+        duration: 0.3,
         ease: "power2.out"
       });
     });
   }
 
-  // Klik untuk membuka game
+  function highlightCenterItem() {
+    const centerX = window.innerWidth / 2;
+    let closest = null;
+    let closestDistance = Infinity;
+
+    allItems.forEach(item => {
+      const rect = item.getBoundingClientRect();
+      const itemCenter = rect.left + rect.width / 2;
+      const distance = Math.abs(centerX - itemCenter);
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        closest = item;
+      }
+    });
+
+    allItems.forEach(item => item.classList.remove("active"));
+    if (closest) closest.classList.add("active");
+  }
+
+  // Klik → buka link game
   track.addEventListener("click", e => {
     const item = e.target.closest(".carousel-item");
     if (item && item.classList.contains("active")) {
@@ -106,12 +140,11 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Update saat resize
+  // Resize → update ulang
   window.addEventListener("resize", () => {
     draggable.update();
     update3DEffects();
   });
 
-  // Inisialisasi
   update3DEffects();
 });
