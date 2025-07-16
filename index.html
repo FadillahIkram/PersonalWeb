@@ -1,98 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Muhammad Fadillah Ikram Naveki Personal Website</title>
 
-  <!-- Favicon -->
   <link rel="icon" href="favicon.ico" type="image/x-icon" />
-
-  <!-- Font & Style -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/games.css">
-  
+
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: black;
+    }
+
+    .container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    .video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .screen-content iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      border: none;
+      z-index: 2;
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+
+  </style>
 </head>
 
 <body>
-  <nav>
-    <a href="index.html">Home</a>
-    <a href="cv-ikram.pdf">Download CV</a>
-    <a href="contact.html">Contact</a>
-    <a href="about.html">About Me</a>
-  </nav>
+  <div class="container">
+    <video class="video" id="introVideo" autoplay muted playsinline>
+      <source src="video/intro_weboriii.mp4" type="video/mp4" />
+    </video>
 
-  <header>
-    <img src="image/foto-profile.jpg" alt="Foto Profile">
-    <h1>Muhammad Fadillah Ikram Naveki</h1>
-    <p><em>Web Developer</em></p>
-  </header>
-
-  <article>
-    <h2>Overview</h2>
-    <p>
-      Hi, saya adalah web developer yang berdomisili di Bogor.
-      Saat ini sedang belajar HTML di Petani Kode.
-    </p>
-  </article>
-
-  <div class="table-container">
-    <table>
-      <thead>
-        <tr>
-          <th>Skill</th>
-          <th>Pengalaman</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>
-            <ul>
-              <li>HTML (Expert)</li>
-              <li>CSS (Beginner)</li>
-              <li>JavaScript (Beginner)</li>
-            </ul>
-          </td>
-          <td>
-            <ul>
-              <li>Freelancer di Internet</li>
-              <li>Leader Local Linux Community</li>
-            </ul>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <section class="game-section">
-  <h2>Kompe dikit kali 😈</h2>
-  <div class="carousel">
-  <div class="carousel-track">
-    <div class="carousel-item" data-link="games/snake/snake.html">
-      <img src="image/snake-thumb.jpg" alt="Snake Game" />
-    </div>
-    <div class="carousel-item" data-link="games/pacman/pacman-js-master/pacman-js-master/pacman1.html">
-      <img src="image/pacman-thumb.jpg" alt="Pacman Game" />
-    </div>
-    <div class="carousel-item" data-link="games/2048/2048-master/2048-master/2048.html">
-      <img src="image/2048-thumb.jpg" alt="2048 Game" />
+    <div class="screen-content">
+      <iframe id="homeFrame" src="home.html"></iframe>
     </div>
   </div>
-</div>
-</section>
 
-  <footer>
-    <p>&copy; 2020 Ahmad Muhardian. All rights reserved.</p>
-  </footer>
+  <script>
+    const video = document.getElementById("introVideo");
+    const iframe = document.getElementById("homeFrame");
 
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.2/dist/gsap.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.2/dist/Draggable.min.js"></script>
-<script src="js/games.js"></script>
+    // 1️⃣ Pilihan A: Tampilkan home setelah video selesai
+    video.addEventListener("ended", () => {
+      iframe.style.opacity = 0.8;
+    });
 
-
-
+    // 2️⃣ Pilihan B: Atau tampilkan setelah durasi tertentu (misal 8 detik)
+    setTimeout(() => {
+      iframe.style.opacity = 1;
+    }, 7850); // 8000 ms = 8 detik
+  </script>
 </body>
-
 </html>

@@ -148,3 +148,15 @@ body {
         height: 300px;
       }
     }
+
+        #canvas3d {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 1000vw;
+      height: 1000vh;
+      z-index: -1; /* atur seberapa terang background */
+      pointer-events: none;
+      background-color: #f4f6f8; /* biar ga mengganggu klik */
+    }
+
